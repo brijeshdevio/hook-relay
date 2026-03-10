@@ -1,0 +1,15 @@
+{
+  "name": "server",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "npx wrangler dev src/app.ts"
+  },
+  "dependencies": {
+    "hono": "^4.12.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
+  }
+}
