@@ -5,3 +5,48 @@ GET {{BASE_URL}}
 
 ### Health check route 
 GET {{BASE_URL}}/health
+
+### Register the user 
+POST {{BASE_URL}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Jonson",
+    "email": "jonson@duck.com",
+    "password": "123456789"
+}
+
+### Login the user 
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "jonson@duck.com",
+    "password": "123456789"
+}
+
+### Get the user profile
+GET {{BASE_URL}}/api/auth/me
+
+### Logout the user
+POST {{BASE_URL}}/api/auth/logout
+
+### Refresh the refresh token
+POST {{BASE_URL}}/api/auth/refresh
+
+### Endpoint create
+POST {{BASE_URL}}/api/endpoints
+Content-Type: application/json
+
+{
+    "name": "UserWebhook",
+    "description": "Handles incoming user registration events",
+    "listenUrl": "https://api.example.com/webhooks/user",
+    "forwardUrl": "https://internal.example.com/events/user"
+}
+
+### Endpoint get all
+GET {{BASE_URL}}/api/endpoints
+
+### Endpoint delete
+DELETE {{BASE_URL}}/api/endpoints/cmmogke1r0002c4cp7xch52nd

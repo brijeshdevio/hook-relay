@@ -1,0 +1,173 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum DeliveryStatus {
+  PENDING
+  DELIVERED
+  FAILED
+  RETRYING
+}
+
+// ─────────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────────
+
+model User {
+  id        String  @id @default(cuid())
+  email     String  @unique
+  name      String?
+  avatarUrl String?
+
+  passwordHash String?
+
+  planExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  endpoints Endpoint[]
+  sessions  Session[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// SESSION (for web dashboard login)
+// ─────────────────────────────────────────────
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  refreshTokens RefreshToken[]
+
+  @@index([userId])
+  @@index([tokenHash, expiresAt])
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  tokenHash String    @unique
+  sessionId String
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([tokenHash, expiresAt])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────
+// ENDPOINT
+// User creates an endpoint — gets a unique URL
+// e.g. webhookmonitor.io/in/k7x9mQpLnR4
+// ─────────────────────────────────────────────
+
+model Endpoint {
+  id          String  @id @default(cuid()) // used in URL: /in/:id
+  userId      String
+  name        String // "Stripe Production"
+  description String?
+
+  listenUrl  String
+  forwardUrl String
+  slug       String @unique
+
+  isActive Boolean @default(true)
+
+  totalReceived  Int       @default(0)
+  totalDelivered Int       @default(0)
+  totalFailed    Int       @default(0)
+  lastReceivedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests WebhookRequest[]
+
+  @@unique([userId, name])
+  @@index([userId, id])
+  @@index([slug])
+  @@index([isActive])
+  @@map("endpoints")
+}
+
+// ─────────────────────────────────────────────
+// WEBHOOK REQUEST
+// Every incoming webhook — stored forever (or until retention limit)
+// ─────────────────────────────────────────────
+
+model WebhookRequest {
+  id         String @id @default(cuid())
+  endpointId String
+
+  // ── Incoming ──────────────────────────────
+  headers     Json // full headers object
+  queryParams Json? // ?foo=bar parsed
+  sourceIp    String?
+
+  // Body: inline if <= 10KB, R2 key if larger
+  bodyInline String? // small bodies here
+  bodyKey    String? // R2 object key for large bodies
+  bodySize   Int     @default(0) // bytes
+
+  receivedAt DateTime @default(now())
+
+  // ── Delivery ──────────────────────────────
+  deliveryStatus   DeliveryStatus @default(PENDING)
+  deliveryAttempts Int            @default(0)
+  nextRetryAt      DateTime?
+  lastAttemptAt    DateTime?
+
+  // ── Response from user's server ──────────
+  responseStatus  Int? // 200, 500, etc.
+  responseBody    String? // first 2000 chars
+  responseHeaders Json?
+  responseTimeMs  Int? // latency
+
+  // ── Replay tracking ───────────────────────
+  isReplay   Boolean @default(false)
+  replayOfId String? // original request id
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  endpoint Endpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@index([endpointId])
+  @@index([endpointId, id])
+  @@index([endpointId, receivedAt(sort: Desc)]) // dashboard list query
+  @@index([deliveryStatus]) // cron retry query
+  @@index([nextRetryAt]) // retry worker query
+  @@map("webhook_requests")
+}
