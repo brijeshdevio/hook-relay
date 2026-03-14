@@ -2,7 +2,8 @@
   "name": "server",
   "type": "commonjs",
   "scripts": {
-    "dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.11",
