@@ -1,4 +1,24 @@
-import { HttpException } from "./http-exception";
+import { ContentfulStatusCode } from "hono/utils/http-status";
+
+export class HttpException extends Error {
+  public readonly statusCode: ContentfulStatusCode;
+  public readonly error: string;
+  public readonly details?: unknown;
+
+  constructor(
+    message: string,
+    statusCode: ContentfulStatusCode,
+    error: string,
+    details?: unknown,
+  ) {
+    super(message);
+    this.statusCode = statusCode;
+    this.error = error;
+    this.details = details;
+
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
 
 export class BadRequestException extends HttpException {
   constructor(message = "Bad Request", details?: unknown) {

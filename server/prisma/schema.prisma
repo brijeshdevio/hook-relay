@@ -130,44 +130,20 @@ model WebhookRequest {
   id         String @id @default(cuid())
   endpointId String
 
-  // ── Incoming ──────────────────────────────
-  headers     Json // full headers object
-  queryParams Json? // ?foo=bar parsed
-  sourceIp    String?
+  headers Json?
+  body    Json?
 
-  // Body: inline if <= 10KB, R2 key if larger
-  bodyInline String? // small bodies here
-  bodyKey    String? // R2 object key for large bodies
-  bodySize   Int     @default(0) // bytes
+  sourceIp String?
+
+  responseStatus Int?
+  responseTimeMs Int?
+
+  deliveryStatus DeliveryStatus @default(PENDING)
 
   receivedAt DateTime @default(now())
 
-  // ── Delivery ──────────────────────────────
-  deliveryStatus   DeliveryStatus @default(PENDING)
-  deliveryAttempts Int            @default(0)
-  nextRetryAt      DateTime?
-  lastAttemptAt    DateTime?
-
-  // ── Response from user's server ──────────
-  responseStatus  Int? // 200, 500, etc.
-  responseBody    String? // first 2000 chars
-  responseHeaders Json?
-  responseTimeMs  Int? // latency
-
-  // ── Replay tracking ───────────────────────
-  isReplay   Boolean @default(false)
-  replayOfId String? // original request id
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
   endpoint Endpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
 
   @@index([endpointId])
-  @@index([endpointId, id])
-  @@index([endpointId, receivedAt(sort: Desc)]) // dashboard list query
-  @@index([deliveryStatus]) // cron retry query
-  @@index([nextRetryAt]) // retry worker query
-  @@map("webhook_requests")
+  @@index([receivedAt(sort: Desc)])
 }

@@ -1,53 +1,72 @@
+import argon2 from "argon2";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { prisma } from "../../config";
 import { LoginDto, RegisterDto } from "./auth.types";
-import {
-  comparePassword,
-  hashPassword,
-  randomString,
-  signJwt,
-  stringHash,
-} from "../../shared/lib";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-import { DAY, DUMMY_HASH, PRISMA_ERROR_CODES, WEEK } from "../../constants";
+import { DUMMY_HASH, PRISMA_CODES } from "../../constants";
 import {
   ConflictException,
   InternalServerErrorException,
   UnauthorizedException,
-} from "../../shared/errors";
-import jwt from "jsonwebtoken";
+} from "../../common/errors";
+import { hashString, randomString, signJwt } from "../../common/utils";
 
 export class AuthService {
   constructor() {}
 
-  private async refreshToken(userId: string): Promise<string> {
-    const refreshToken = randomString();
-    const tokenHash = stringHash(refreshToken);
-    await prisma.session.create({
-      data: {
-        userId,
-        tokenHash: tokenHash,
-        expiresAt: WEEK,
-        refreshTokens: {
-          create: {
-            tokenHash: refreshToken,
-            expiresAt: DAY,
-          },
-        },
-      },
-    });
-    return refreshToken;
+  /* ----------------------------- Helpers ----------------------------- */
+  private calculateExpiry(ms: number) {
+    return new Date(Date.now() + ms);
   }
 
-  private async accessToken(userId: string): Promise<string> {
-    return await signJwt({
+  private hashToken(token: string) {
+    return hashString(token);
+  }
+
+  private generateAccessToken(userId: string): string {
+    return signJwt({
       sub: userId,
       type: "access",
     });
   }
 
-  register = async (data: RegisterDto) => {
+  private async hashPassword(password: string): Promise<string> {
+    return await argon2.hash(password);
+  }
+
+  private async comparePassword(passwordHash: string, password: string) {
+    return await argon2.verify(passwordHash, password);
+  }
+
+  /**
+   * Creates a new session + refresh token
+   */
+  private async createSession(userId: string): Promise<string> {
+    const refreshToken = randomString();
+    const tokenHash = this.hashToken(refreshToken);
+
+    await prisma.session.create({
+      data: {
+        userId,
+        tokenHash,
+        expiresAt: this.calculateExpiry(7 * 24 * 60 * 60 * 1000),
+
+        refreshTokens: {
+          create: {
+            tokenHash,
+            expiresAt: this.calculateExpiry(24 * 60 * 60 * 1000),
+          },
+        },
+      },
+    });
+
+    return refreshToken;
+  }
+
+  /* ----------------------------- Register ----------------------------- */
+  async register(data: RegisterDto) {
     try {
-      const passwordHash = await hashPassword(data.password);
+      const passwordHash = await this.hashPassword(data.password);
+
       return await prisma.user.create({
         data: {
           name: data.name,
@@ -59,29 +78,32 @@ export class AuthService {
           name: true,
           email: true,
           createdAt: true,
-          updatedAt: true,
         },
       });
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === PRISMA_ERROR_CODES.CONFLICT) {
-          throw new ConflictException(
-            `${data.email} already exists. Please try a different email.`,
-          );
-        }
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === PRISMA_CODES.CONFLICT
+      ) {
+        throw new ConflictException(
+          `${data.email} already exists. Use another email.`,
+        );
       }
+
       throw new InternalServerErrorException();
     }
-  };
+  }
 
-  login = async (data: LoginDto) => {
+  /* ----------------------------- Login ----------------------------- */
+  async login(data: LoginDto) {
     const user = await prisma.user.findUnique({
       where: { email: data.email },
     });
 
-    const passwordToCheck: string = user?.passwordHash ?? DUMMY_HASH;
-    const isPasswordValid = await comparePassword(
-      passwordToCheck,
+    const passwordHash = user?.passwordHash ?? DUMMY_HASH;
+
+    const isPasswordValid = await this.comparePassword(
+      passwordHash,
       data.password,
     );
 
@@ -89,62 +111,85 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    const refreshToken = await this.refreshToken(user.id);
-    const accessToken = await this.accessToken(user.id);
-    return { accessToken, refreshToken };
-  };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.generateAccessToken(user.id),
+      this.createSession(user.id),
+    ]);
 
-  async logout(token: string): Promise<void> {
-    const tokenHash = stringHash(token);
+    return { accessToken, refreshToken };
+  }
+
+  /* ----------------------------- Logout ----------------------------- */
+  async logout(refreshToken: string): Promise<void> {
+    const tokenHash = this.hashToken(refreshToken);
+
     await prisma.session.deleteMany({
       where: {
         refreshTokens: {
-          some: {
-            tokenHash,
-          },
+          some: { tokenHash },
         },
       },
     });
   }
 
-  async refresh(token: string) {
+  /* ----------------------------- Refresh ----------------------------- */
+  async refresh(refreshToken: string) {
+    const tokenHash = this.hashToken(refreshToken);
+    const newRefreshToken = randomString();
+    const newTokenHash = this.hashToken(newRefreshToken);
+
     try {
-      const tokenHash = stringHash(token);
-      const refreshToken = randomString();
-      const newTokenHash = stringHash(refreshToken);
-      const { session } = await prisma.refreshToken.update({
-        where: {
-          tokenHash,
-          expiresAt: { gt: new Date() },
-          session: {
+      const result = await prisma.$transaction(async (tx) => {
+        const token = await tx.refreshToken.update({
+          where: {
+            tokenHash,
             expiresAt: { gt: new Date() },
+            session: {
+              expiresAt: { gt: new Date() },
+            },
           },
-        },
-        data: {
-          tokenHash: newTokenHash,
-          expiresAt: DAY,
-        },
-        select: { session: { select: { user: { select: { id: true } } } } },
+          data: {
+            tokenHash: newTokenHash,
+            expiresAt: this.calculateExpiry(24 * 60 * 60 * 1000),
+          },
+          select: {
+            session: {
+              select: {
+                user: {
+                  select: { id: true },
+                },
+              },
+            },
+          },
+        });
+
+        const accessToken = await this.generateAccessToken(
+          token.session.user.id,
+        );
+
+        return { accessToken };
       });
 
-      const accessToken = await this.accessToken(session.user.id);
-
-      return { accessToken, refreshToken };
+      return {
+        accessToken: result.accessToken,
+        refreshToken: newRefreshToken,
+      };
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === PRISMA_ERROR_CODES.NOT_FOUND) {
-          throw new UnauthorizedException(
-            "Invalid or expired refresh token. Please login again.",
-          );
-        }
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === PRISMA_CODES.NOT_FOUND
+      ) {
+        throw new UnauthorizedException("Invalid or expired refresh token");
       }
+
       throw new InternalServerErrorException();
     }
   }
 
-  me = async (id: string) => {
+  /* ----------------------------- Me ----------------------------- */
+  async me(userId: string) {
     const user = await prisma.user.findUnique({
-      where: { id },
+      where: { id: userId },
       select: {
         id: true,
         name: true,
@@ -153,7 +198,9 @@ export class AuthService {
         updatedAt: true,
       },
     });
-    if (user) return user;
-    throw new UnauthorizedException();
-  };
+
+    if (!user) throw new UnauthorizedException();
+
+    return user;
+  }
 }

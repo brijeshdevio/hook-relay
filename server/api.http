@@ -1,52 +1,149 @@
 @BASE_URL = http://localhost:8787
 
-### Welcome route 
+############################################################
+# BASIC SYSTEM ROUTES
+############################################################
+
+### Root welcome route
+# Simple route to verify the API server is running
 GET {{BASE_URL}}
 
-### Health check route 
+### Health check route
+# Used by monitoring systems (Docker, Kubernetes, uptime checks)
+# Should return a simple status like: { "status": "ok" }
 GET {{BASE_URL}}/health
 
-### Register the user 
+
+
+############################################################
+# AUTHENTICATION ROUTES
+############################################################
+
+### Register a new user
+# Creates a new account and returns auth tokens (if implemented)
 POST {{BASE_URL}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Jonson",
-    "email": "jonson@duck.com",
-    "password": "123456789"
+  "name": "Jonson Carter",
+  "email": "jonson@duck.com",
+  "password": "123456789"
 }
 
-### Login the user 
+
+### Login user
+# Authenticates a user and sets session / access token
 POST {{BASE_URL}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "jonson@duck.com",
-    "password": "123456789"
+  "email": "jonson@duck.com",
+  "password": "123456789"
 }
 
-### Get the user profile
+
+### Get logged-in user profile
+# Requires authentication cookie or bearer token
+# Returns current authenticated user info
 GET {{BASE_URL}}/api/auth/me
 
-### Logout the user
+
+### Logout user
+# Invalidates session or refresh token
 POST {{BASE_URL}}/api/auth/logout
 
-### Refresh the refresh token
+
+### Refresh authentication token
+# Exchanges refresh token for a new access token
 POST {{BASE_URL}}/api/auth/refresh
 
-### Endpoint create
+
+
+############################################################
+# ENDPOINT MANAGEMENT (Webhook Destinations)
+############################################################
+
+### Create a webhook endpoint
+# Defines where incoming webhook events should be forwarded
 POST {{BASE_URL}}/api/endpoints
 Content-Type: application/json
 
 {
-    "name": "UserWebhook",
-    "description": "Handles incoming user registration events",
-    "listenUrl": "https://api.example.com/webhooks/user",
-    "forwardUrl": "https://internal.example.com/events/user"
+  "name": "User Registration Webhook",
+  "description": "Handles incoming user registration events from external services",
+  "listenUrl": "https://api.example.com/webhooks/user",
+  "forwardUrl": "http://localhost:8787/internal/events/user-registration"
 }
 
-### Endpoint get all
+
+### Get all webhook endpoints
+# Returns a list of all endpoints created by the user
 GET {{BASE_URL}}/api/endpoints
 
-### Endpoint delete
-DELETE {{BASE_URL}}/api/endpoints/cmmogke1r0002c4cp7xch52nd
+
+### Get a single endpoint
+# Returns full configuration and metadata for a specific endpoint
+GET {{BASE_URL}}/api/endpoints/cmmq0rmke0000h5cpwugg3s4o
+
+
+### Update endpoint details
+# Modify name, description, or forwarding configuration
+PATCH {{BASE_URL}}/api/endpoints/cmmq0k9630001vicpdubvqe1d
+Content-Type: application/json
+
+{
+  "name": "User Registration Webhook v2"
+}
+
+
+### Delete endpoint
+# Permanently removes the webhook endpoint
+DELETE {{BASE_URL}}/api/endpoints/cmmq0k9630001vicpdubvqe1d
+
+
+
+############################################################
+# INCOMING WEBHOOK SIMULATION
+############################################################
+
+### Simulate GitHub push webhook
+# This mimics a GitHub webhook payload
+# Useful for testing webhook ingestion pipelines
+POST {{BASE_URL}}/api/in/779d72c730ea
+Content-Type: application/json
+X-GitHub-Event: push
+X-GitHub-Delivery: 12345678
+User-Agent: GitHub-Hookshot
+
+{
+  "ref": "refs/heads/main",
+  "repository": {
+    "name": "test-repo",
+    "full_name": "demo/test-repo",
+    "private": false
+  },
+  "pusher": {
+    "name": "developer",
+    "email": "dev@example.com"
+  },
+  "head_commit": {
+    "id": "abc123456",
+    "message": "Fix login bug",
+    "timestamp": "2026-03-13T12:00:00Z",
+    "author": {
+      "name": "Developer",
+      "email": "dev@example.com"
+    }
+  }
+}
+
+
+
+############################################################
+# WEBHOOK REQUEST LOGS
+############################################################
+
+### Get webhook request history for an endpoint
+# Returns stored webhook payloads, headers, delivery status,
+# response status, and response time
+GET {{BASE_URL}}/api/cmmq3m1ys0002wlcpoiwr8obu/requests

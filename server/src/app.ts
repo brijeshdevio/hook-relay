@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { routes } from "./routes";
-import { globalErrorHandler } from "./shared/middlewares";
+import { appError } from "./common/errors";
+import "./workers/webhook.worker";
 
 const app = new Hono();
 
@@ -10,6 +11,6 @@ app.get("/health", (c) => c.text("OK"));
 
 app.route("/api", routes);
 
-app.onError(globalErrorHandler);
+app.onError(appError);
 
 export default app;
