@@ -1,5 +1,0 @@
-{
-  "src": "public/**/*",
-  "use": "@vercel/static",
-  "config": { "zeroConfig": true, "outputDirectory": "public" }
-}
