@@ -15,7 +15,7 @@ app.get("/", (c) => c.text("Welcome to Hono!"));
 app.get("/health", (c) => c.text("OK"));
 
 // app.route("/api", routes);
-app.get("/api/me", authMiddleware, new AuthController(new AuthService()).me);
+app.get("/auth/me", authMiddleware, new AuthController(new AuthService()).me);
 
 app.onError(appError);
 
