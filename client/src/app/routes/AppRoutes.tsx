@@ -10,6 +10,7 @@ const Login = lazy(() => import("@/features/auth/pages/Login"));
 const Dashboard = lazy(() => import("@/features/dashboard/Dashboard"));
 const Endpoint = lazy(() => import("@/features/endpoint/Endpoint"));
 const Webhook = lazy(() => import("@/features/webhook/Webhook"));
+const NotFound = lazy(()=> import("@/features/misc/NotFound"))
 
 export function AppRoutes() {
   return (
@@ -25,6 +26,7 @@ export function AppRoutes() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
