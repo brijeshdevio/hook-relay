@@ -1,12 +1,16 @@
-import { Fragment } from "react/jsx-runtime";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 import { AppRoutes } from "@/app/routes/AppRoutes";
 import "@/styles/App.css";
 
 function App() {
   return (
-    <Fragment>
-      <AppRoutes />
-    </Fragment>
+    <>
+      <QueryClientProvider client={new QueryClient()}>
+        <AppRoutes />
+      </QueryClientProvider>
+      <Toaster />
+    </>
   );
 }
 

@@ -19,12 +19,12 @@ export function Button({
       {...props}
       type={type}
       disabled={isDisabled || isLoading}
-      className={clsx("btn rounded-full", props.className)}
+      className={clsx("btn", props.className)}
     >
       {isLoading ? (
         <span
           className={
-            "loading loading-spinner loading-sm disabled:cursor-not-allowed"
+            "loading loading-spinner loading-sm disabled:cursor-not-allowed  capitalize text-base font-semibold"
           }
         ></span>
       ) : (
