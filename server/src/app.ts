@@ -1,21 +1,22 @@
 import { Hono } from "hono";
+import { cors } from 'hono/cors'
 import { appError } from "./common/errors";
+import { env } from "./config";
 import { routes } from "./routes";
 import "./workers/webhook.worker";
 
-// // routes
-// import { AuthController } from "./modules/auth/auth.controller";
-// import { authMiddleware } from "./common/middleware";
-// import { AuthService } from "./modules/auth/auth.service";
-
 const app = new Hono();
+
+app.use('*', cors({
+    origin: env.FRONTEND_URL,
+    credentials: true,
+}))
 
 app.get("/", (c) => c.text("Welcome to Hono!"));
 
 app.get("/health", (c) => c.text("OK"));
 
 app.route("/", routes);
-// app.get("/auth/me", authMiddleware, new AuthController(new AuthService()).me);
 
 app.onError(appError);
 
