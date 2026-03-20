@@ -1,5 +1,5 @@
-import { 
-  Webhook, LayoutDashboard, Router, Activity, History, Settings,
+import {
+  LayoutDashboard, Router, Activity, History, Settings,
   ArrowLeft, Pencil, Copy, ExternalLink, RefreshCw, ChevronRight,
   Link as LinkIcon
 } from "lucide-react";
@@ -63,7 +63,7 @@ export default function Endpoint() {
       <aside className="w-64 bg-base-100 border-r border-base-content/10 flex flex-col justify-between shrink-0 hidden md:flex">
         <div>
           {/* Logo */}
-          
+
 
           {/* Navigation */}
           <nav className="px-3 py-4 space-y-1">
@@ -71,11 +71,10 @@ export default function Endpoint() {
               <a
                 key={item.name}
                 href="#"
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-[14px] transition-colors ${
-                  item.active
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-[14px] transition-colors ${item.active
                     ? "bg-primary/10 text-primary border border-primary/20"
                     : "text-base-content/70 hover:bg-base-200/50 hover:text-base-content"
-                }`}
+                  }`}
               >
                 {item.icon}
                 {item.name}
@@ -96,7 +95,7 @@ export default function Endpoint() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-10">
         <div className="max-w-5xl mx-auto space-y-8">
-          
+
           {/* Breadcrumb Header */}
           <div className="flex items-center gap-2 text-[14px] font-semibold text-base-content/50">
             <a href="#" className="hover:text-base-content transition-colors">Endpoints</a>
@@ -185,17 +184,16 @@ export default function Endpoint() {
                   48 total
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3 shrink-0">
                 <div className="join bg-base-100 p-1 border border-base-content/10 shadow-sm rounded-xl">
                   {["All", "Delivered", "Failed", "Pending"].map((tab, idx) => (
-                    <button 
-                      key={tab} 
-                      className={`join-item btn btn-sm border-none bg-transparent shadow-none capitalize font-semibold text-[13px] px-4 ${
-                        idx === 0 
-                          ? "bg-base-200/80 text-base-content hover:bg-base-300 rounded-lg" 
+                    <button
+                      key={tab}
+                      className={`join-item btn btn-sm border-none bg-transparent shadow-none capitalize font-semibold text-[13px] px-4 ${idx === 0
+                          ? "bg-base-200/80 text-base-content hover:bg-base-300 rounded-lg"
                           : "text-base-content/60 hover:bg-base-200/50"
-                      }`}
+                        }`}
                     >
                       {tab}
                     </button>

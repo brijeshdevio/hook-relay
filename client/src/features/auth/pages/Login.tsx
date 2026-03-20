@@ -1,4 +1,4 @@
-import { Mail, Lock, Github, Cloud, Webhook } from 'lucide-react';
+import { Mail, Lock, Webhook } from 'lucide-react';
 import { Button, Input } from '@/shared/ui';
 import { useLoginFacade } from '../auth.hooks';
 import { Link } from 'react-router-dom';

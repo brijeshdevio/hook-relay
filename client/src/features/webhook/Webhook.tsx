@@ -1,6 +1,6 @@
-import { 
-  Webhook, LayoutDashboard, Router, History, Settings,
-  ArrowLeft, Copy, RotateCcw, 
+import {
+  LayoutDashboard, Router, History, Settings,
+  ArrowLeft, Copy, RotateCcw,
   TerminalSquare, ListOrdered, Info, Code, Zap
 } from "lucide-react";
 import { Button } from "../../shared/ui/Button";
@@ -19,18 +19,17 @@ export default function WebhookPage() {
       <aside className="w-64 bg-base-100 border-r border-base-content/10 flex flex-col justify-between shrink-0 hidden md:flex">
         <div>
           {/* Logo */}
-         
+
           {/* Navigation */}
           <nav className="px-3 py-4 space-y-1">
             {SIDEBAR_NAV.map((item) => (
               <a
                 key={item.name}
                 href="#"
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-[14px] transition-colors ${
-                  item.active
-                    ? "bg-[#E75B26]/10 text-[#E75B26] border border-[#E75B26]/20"
-                    : "text-base-content/70 hover:bg-base-200/50 hover:text-base-content"
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-[14px] transition-colors ${item.active
+                  ? "bg-[#E75B26]/10 text-[#E75B26] border border-[#E75B26]/20"
+                  : "text-base-content/70 hover:bg-base-200/50 hover:text-base-content"
+                  }`}
               >
                 {item.icon}
                 {item.name}
@@ -42,9 +41,9 @@ export default function WebhookPage() {
         {/* User Profile */}
         <div className="p-4 border-t border-base-content/10">
           <div className="flex items-center gap-3 px-2 py-2">
-            <img 
-              src="https://i.pravatar.cc/150?u=alex" 
-              alt="Alex Rivera" 
+            <img
+              src="https://i.pravatar.cc/150?u=alex"
+              alt="Alex Rivera"
               className="w-10 h-10 rounded-full border border-base-content/10"
             />
             <div className="flex flex-col">
@@ -57,7 +56,7 @@ export default function WebhookPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        
+
         {/* Top Header Row */}
         <header className="bg-base-100 border-b border-base-content/10 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
           <div className="flex flex-col gap-3">
@@ -67,7 +66,7 @@ export default function WebhookPage() {
               <span className="text-base-content/30">/</span>
               <span className="text-base-content">Request Detail</span>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="bg-[#E75B26] text-white px-3 py-1 rounded-[6px] text-[12px] font-extrabold tracking-wider">
                 POST
@@ -81,7 +80,7 @@ export default function WebhookPage() {
               </div>
             </div>
           </div>
-          
+
           <Button className="bg-[#E75B26] hover:bg-[#D44E1C] text-white border-none font-bold text-[14px] px-5 h-10 rounded-[10px] shadow-sm flex items-center gap-2 mt-2 sm:mt-0">
             <RotateCcw className="w-4 h-4" />
             Replay Request
@@ -91,10 +90,10 @@ export default function WebhookPage() {
         {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-6 md:p-8 ">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
-            
+
             {/* Left Column - Payloads */}
             <div className="flex-1 space-y-6">
-              
+
               {/* Request Body */}
               <div className="bg-base-100 rounded-2xl border border-base-content/10 shadow-sm overflow-hidden">
                 <div className="border-b border-base-content/5 px-5 py-4 flex items-center justify-between bg-base-100">
@@ -108,21 +107,21 @@ export default function WebhookPage() {
                 </div>
                 <div className="bg-[#161B22] p-6 text-[13.5px] font-mono leading-relaxed overflow-x-auto text-slate-300">
                   <code>
-                    <span className="text-slate-300">{`{`}</span><br/>
-                    &nbsp;&nbsp;<span className="text-slate-400">"event"</span>: <span className="text-slate-200">"payment.succeeded"</span>,<br/>
-                    &nbsp;&nbsp;<span className="text-slate-400">"created_at"</span>: <span className="text-slate-200">"2023-10-27T10:30:00Z"</span>,<br/>
-                    &nbsp;&nbsp;<span className="text-slate-400">"data"</span>: {`{`}<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"id"</span>: <span className="text-slate-200">"pay_9k2m3n4b5v6c"</span>,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"amount"</span>: <span className="text-[#79C0FF]">4900</span>,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"currency"</span>: <span className="text-slate-200">"usd"</span>,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"customer"</span>: {`{`}<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"name"</span>: <span className="text-slate-200">"Jane Doe"</span>,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"email"</span>: <span className="text-slate-200">"jane@example.com"</span><br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;{`}`},<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"metadata"</span>: {`{`}<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"order_id"</span>: <span className="text-slate-200">"ord_8829"</span><br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;{`}`}<br/>
-                    &nbsp;&nbsp;{`}`}<br/>
+                    <span className="text-slate-300">{`{`}</span><br />
+                    &nbsp;&nbsp;<span className="text-slate-400">"event"</span>: <span className="text-slate-200">"payment.succeeded"</span>,<br />
+                    &nbsp;&nbsp;<span className="text-slate-400">"created_at"</span>: <span className="text-slate-200">"2023-10-27T10:30:00Z"</span>,<br />
+                    &nbsp;&nbsp;<span className="text-slate-400">"data"</span>: {`{`}<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"id"</span>: <span className="text-slate-200">"pay_9k2m3n4b5v6c"</span>,<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"amount"</span>: <span className="text-[#79C0FF]">4900</span>,<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"currency"</span>: <span className="text-slate-200">"usd"</span>,<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"customer"</span>: {`{`}<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"name"</span>: <span className="text-slate-200">"Jane Doe"</span>,<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"email"</span>: <span className="text-slate-200">"jane@example.com"</span><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;{`}`},<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"metadata"</span>: {`{`}<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-400">"order_id"</span>: <span className="text-slate-200">"ord_8829"</span><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;{`}`}<br />
+                    &nbsp;&nbsp;{`}`}<br />
                     <span className="text-slate-300">{`}`}</span>
                   </code>
                 </div>
@@ -136,7 +135,7 @@ export default function WebhookPage() {
                     Request Headers
                   </div>
                 </div>
-                
+
                 <table className="w-full text-left border-collapse">
                   <thead className="bg-[#F8FAFC]">
                     <tr>
@@ -168,14 +167,14 @@ export default function WebhookPage() {
 
             {/* Right Column - Meta & Actions */}
             <div className="w-full lg:w-[380px] space-y-6 shrink-0">
-              
+
               {/* Delivery Info */}
               <div className="bg-base-100 rounded-2xl border border-base-content/10 shadow-sm overflow-hidden">
                 <div className="border-b border-base-content/5 px-5 py-4 bg-[#F8FAFC] flex items-center gap-2 font-bold text-[15px] text-base-content">
                   <Info className="w-5 h-5 text-[#E75B26]" />
                   Delivery Info
                 </div>
-                
+
                 <div className="p-5 flex flex-col gap-5 text-[14px]">
                   <div className="flex items-center justify-between pb-4 border-b border-base-content/5">
                     <span className="text-base-content/60 font-medium">Status</span>
@@ -211,10 +210,10 @@ export default function WebhookPage() {
                 <div className="p-5">
                   <div className="bg-[#161B22] p-4 rounded-xl text-[12px] font-mono leading-relaxed overflow-x-auto text-slate-300">
                     <code>
-                      {`{`} <br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">"status"</span>: <span className="text-slate-200">"success"</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">"received"</span>: <span className="text-[#8957E5]">true</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">"timestamp"</span>: <span className="text-slate-200">"2023-10-27T10:30:00.142Z"</span><br/>
+                      {`{`} <br />
+                      &nbsp;&nbsp;<span className="text-slate-400">"status"</span>: <span className="text-slate-200">"success"</span>,<br />
+                      &nbsp;&nbsp;<span className="text-slate-400">"received"</span>: <span className="text-[#8957E5]">true</span>,<br />
+                      &nbsp;&nbsp;<span className="text-slate-400">"timestamp"</span>: <span className="text-slate-200">"2023-10-27T10:30:00.142Z"</span><br />
                       {`}`}
                     </code>
                   </div>
@@ -240,7 +239,7 @@ export default function WebhookPage() {
               </div>
 
             </div>
-            
+
           </div>
         </main>
       </div>
