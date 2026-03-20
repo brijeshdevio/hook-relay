@@ -9,9 +9,9 @@ import { Loader } from "@/shared/ui";
 const Home = lazy(() => import("@/features/home/Home"));
 const Register = lazy(() => import("@/features/auth/pages/Register"));
 const Login = lazy(() => import("@/features/auth/pages/Login"));
-const Dashboard = lazy(() => import("@/features/dashboard/Dashboard"));
-const Endpoint = lazy(() => import("@/features/endpoint/Endpoint"));
-const Webhook = lazy(() => import("@/features/webhook/Webhook"));
+const Dashboard = lazy(() => import("@/features/dashboard/pages/Dashboard"));
+const Endpoint = lazy(() => import("@/features/dashboard/pages/Endpoint"));
+const Webhook = lazy(() => import("@/features/dashboard/pages/Webhook"));
 const NotFound = lazy(() => import("@/features/misc/NotFound"))
 
 function ProtectedRoute() {

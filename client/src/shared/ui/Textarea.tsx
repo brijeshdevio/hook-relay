@@ -13,7 +13,7 @@ export function Textarea({ label, error, ...props }: TextareaDto) {
       {label && (
         <label
           htmlFor={props?.id ?? id}
-          className="text-base-content/70 text-sm font-medium"
+          className="text-base-content text-sm font-medium"
         >
           {label}
         </label>

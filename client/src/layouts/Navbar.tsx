@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import { Menu, Webhook, X } from "lucide-react";
 import { NAV_LINKS } from "@/shared/constants";
 import { Button } from "@/shared/ui";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated } = useAuth()
 
   return (
     <nav className="bg-base-100/70 sticky top-0 z-50 w-full rounded-b-xl border-b border-white/10 p-3 bg-blend-hard-light shadow backdrop-blur-sm">
@@ -28,28 +30,40 @@ export function Navbar() {
 
         <div className="hidden space-x-6 lg:flex">
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
+              to={link.href}
               className="hover:text-primary text-sm opacity-80 hover:opacity-100"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
+
         </div>
 
         <div className="hidden items-center space-x-6 md:flex">
-          <Link
-            to={"/login"}
-            className="hover:text-primary text-sm opacity-80 hover:opacity-100"
-          >
-            Login
-          </Link>
-          <Link to={"/register"}>
-            <Button className="btn-primary btn-md text-sm">
-              Create Account
-            </Button>
-          </Link>
+          {isAuthenticated ? <>
+            <Link
+              to={"/dashboard"}
+              className="hover:text-primary text-sm opacity-80 hover:opacity-100"
+            >
+              Dashboard
+            </Link>
+          </> :
+            <>
+              <Link
+                to={"/login"}
+                className="hover:text-primary text-sm opacity-80 hover:opacity-100"
+              >
+                Login
+              </Link>
+              <Link to={"/register"}>
+                <Button className="btn-primary btn-md text-sm">
+                  Create Account
+                </Button>
+              </Link>
+            </>
+          }
         </div>
 
         {/* Mobile menu button */}
@@ -66,14 +80,21 @@ export function Navbar() {
       {isOpen && (
         <div className="mt-3 md:hidden">
           <div className="flex flex-col space-y-2">
-            <Link to={"/login"} onClick={() => setIsOpen(false)}>
-              <Button className="btn-ghost btn-md w-full text-sm">Login</Button>
-            </Link>
-            <Link to={"/register"} onClick={() => setIsOpen(false)}>
-              <Button className="btn-primary btn-md w-full text-sm">
-                Create Account
-              </Button>
-            </Link>
+            {isAuthenticated ?
+              <>
+                <Link to={"/dashboard"} onClick={() => setIsOpen(false)}>
+                  <Button className="btn-ghost btn-md w-full text-sm">Dashboard</Button>
+                </Link>
+              </> : <>
+                <Link to={"/login"} onClick={() => setIsOpen(false)}>
+                  <Button className="btn-ghost btn-md w-full text-sm">Login</Button>
+                </Link>
+                <Link to={"/register"} onClick={() => setIsOpen(false)}>
+                  <Button className="btn-primary btn-md w-full text-sm">
+                    Create Account
+                  </Button>
+                </Link>
+              </>}
           </div>
         </div>
       )}

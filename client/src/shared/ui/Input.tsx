@@ -22,7 +22,7 @@ export function Input({ label, error, leftIcon, wrapperClassName, ...props }: In
       {label && (
         <label
           htmlFor={props?.id ?? id}
-          className="text-base-content/70 text-[14px] font-medium"
+          className="text-base-content text-[14px] font-medium"
         >
           {label}
         </label>

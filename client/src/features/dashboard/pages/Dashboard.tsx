@@ -1,16 +1,9 @@
-import { 
-  LayoutDashboard, ArrowRightLeft, History, Settings, 
-  LogOut, Plus, Pencil, MoreVertical, Copy, 
-  TrendingUp, TrendingDown 
+import {
+  Plus, Pencil, MoreVertical, Copy,
+  TrendingUp, TrendingDown
 } from "lucide-react";
-import { Button } from "../../shared/ui/Button";
-
-const SIDEBAR_NAV = [
-  { name: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" />, active: true },
-  { name: "Relays", icon: <ArrowRightLeft className="w-5 h-5" />, active: false },
-  { name: "Logs", icon: <History className="w-5 h-5" />, active: false },
-  { name: "Settings", icon: <Settings className="w-5 h-5" />, active: false },
-];
+import { Button } from "@/shared/ui/Button";
+import { NewEndpoint } from "../components/NewEndpoint";
 
 const OVERVIEW_STATS = [
   { title: "Total Endpoints", value: "12", trend: "up", percent: "2%" },
@@ -58,60 +51,19 @@ const RELAYS = [
 export default function Dashboard() {
   return (
     <div className="flex h-screen bg-base-200 text-base-content font-sans selection:bg-primary/30">
-      {/* Sidebar */}
-      <aside className="w-64 bg-base-100 border-r border-base-content/10 flex flex-col justify-between shrink-0 hidden md:flex">
-        <div>
-        
-          {/* Navigation */}
-          <nav className="px-3 py-4 space-y-1">
-            {SIDEBAR_NAV.map((item) => (
-              <a
-                key={item.name}
-                href="#"
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-[14px] transition-colors ${
-                  item.active
-                    ? "bg-primary text-primary-content shadow-sm"
-                    : "text-base-content/70 hover:bg-base-200/50 hover:text-base-content"
-                }`}
-              >
-                {item.icon}
-                {item.name}
-              </a>
-            ))}
-          </nav>
-        </div>
 
-        {/* User Profile */}
-        <div className="p-4 border-t border-base-content/10">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-base-200/50 hover:bg-base-200 cursor-pointer transition-colors group">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-base-100 text-base-content/50 flex items-center justify-center font-bold text-sm shrink-0 border border-base-content/5">
-                AR
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[14px] font-bold text-base-content leading-tight">Alex Rivera</span>
-                <span className="text-[12px] text-base-content/50 font-medium">Pro Plan</span>
-              </div>
-            </div>
-            <LogOut className="w-4 h-4 text-base-content/40 group-hover:text-base-content transition-colors" />
-          </div>
-        </div>
-      </aside>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-10">
         <div className="max-w-6xl mx-auto">
-          
+
           {/* Header Row */}
           <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight mb-1 text-base-content">Endpoints</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-1 text-base-content">Dashboard</h1>
               <p className="text-[15px] text-base-content/60 font-medium">Manage and monitor your incoming webhook relays</p>
             </div>
-            <Button className="btn-primary h-11 px-6 !rounded-xl font-bold shadow-sm flex items-center gap-2">
-              <Plus className="w-5 h-5" />
-              New Endpoint
-            </Button>
+            <NewEndpoint />
           </header>
 
           {/* Top Stats Grid */}
@@ -120,7 +72,7 @@ export default function Dashboard() {
               const BadgeIcon = stat.trend === "up" ? TrendingUp : TrendingDown;
               const badgeBg = stat.trend === "up" || stat.isGoodTrend ? "bg-success/10 text-success" : "bg-error/10 text-error";
               const valueColor = stat.title === "Failed" ? "text-error" : "text-base-content";
-              
+
               return (
                 <div key={idx} className={`bg-base-100 rounded-[14px] p-5 shadow-sm border border-base-content/5 relative overflow-hidden ${stat.accent || ""}`}>
                   <h3 className="text-[13px] font-semibold text-base-content/60 mb-2">{stat.title}</h3>
@@ -138,7 +90,7 @@ export default function Dashboard() {
 
           {/* Relays Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            
+
             {/* Existing Relays */}
             {RELAYS.map((relay, idx) => (
               <div key={idx} className="bg-base-100 rounded-[20px] p-6 shadow-sm border border-base-content/5 flex flex-col hover:border-base-content/10 transition-colors">
