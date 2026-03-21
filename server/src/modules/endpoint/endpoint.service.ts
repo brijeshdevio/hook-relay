@@ -54,6 +54,11 @@ export class EndpointService {
         listenUrl: true,
         forwardUrl: true,
         createdAt: true,
+        isActive: true,
+        lastReceivedAt: true,
+        totalDelivered: true,
+        totalFailed: true,
+        totalReceived: true,
       },
     });
   }
