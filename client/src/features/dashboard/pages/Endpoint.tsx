@@ -3,7 +3,7 @@ import {
   ArrowLeft, Pencil, Copy, ExternalLink, RefreshCw, ChevronRight,
   Link as LinkIcon
 } from "lucide-react";
-import { Button } from "../../shared/ui/Button";
+import { Button } from "@/shared/ui";
 
 const SIDEBAR_NAV = [
   { name: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" />, active: false },
@@ -72,8 +72,8 @@ export default function Endpoint() {
                 key={item.name}
                 href="#"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-[14px] transition-colors ${item.active
-                    ? "bg-primary/10 text-primary border border-primary/20"
-                    : "text-base-content/70 hover:bg-base-200/50 hover:text-base-content"
+                  ? "bg-primary/10 text-primary border border-primary/20"
+                  : "text-base-content/70 hover:bg-base-200/50 hover:text-base-content"
                   }`}
               >
                 {item.icon}
@@ -191,8 +191,8 @@ export default function Endpoint() {
                     <button
                       key={tab}
                       className={`join-item btn btn-sm border-none bg-transparent shadow-none capitalize font-semibold text-[13px] px-4 ${idx === 0
-                          ? "bg-base-200/80 text-base-content hover:bg-base-300 rounded-lg"
-                          : "text-base-content/60 hover:bg-base-200/50"
+                        ? "bg-base-200/80 text-base-content hover:bg-base-300 rounded-lg"
+                        : "text-base-content/60 hover:bg-base-200/50"
                         }`}
                     >
                       {tab}

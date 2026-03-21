@@ -6,7 +6,7 @@ function randomNumber(max = 1000) {
     return Math.floor(Math.random() * max);
 }
 
-function randomUrl(type) {
+function randomUrl(type: string) {
     const domains = ["api.example.com", "hooks.service.io", "webhook.site", "internal.app"];
     const domain = domains[Math.floor(Math.random() * domains.length)];
     return `https://${domain}/${type}/${randomId()}`;

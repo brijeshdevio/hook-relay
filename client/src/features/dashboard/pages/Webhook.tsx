@@ -3,7 +3,7 @@ import {
   ArrowLeft, Copy, RotateCcw,
   TerminalSquare, ListOrdered, Info, Code, Zap
 } from "lucide-react";
-import { Button } from "../../shared/ui/Button";
+import { Button } from "@/shared/ui/Button";
 
 const SIDEBAR_NAV = [
   { name: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" />, active: false },
