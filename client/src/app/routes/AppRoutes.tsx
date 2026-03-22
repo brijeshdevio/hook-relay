@@ -1,5 +1,11 @@
 import { lazy } from "react";
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+} from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,7 +18,7 @@ const Login = lazy(() => import("@/features/auth/pages/Login"));
 const Dashboard = lazy(() => import("@/features/dashboard/pages/Dashboard"));
 const Endpoint = lazy(() => import("@/features/dashboard/pages/Endpoint"));
 const Webhook = lazy(() => import("@/features/dashboard/pages/Webhook"));
-const NotFound = lazy(() => import("@/features/misc/NotFound"))
+const NotFound = lazy(() => import("@/features/misc/NotFound"));
 
 function ProtectedRoute() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -38,7 +44,7 @@ export function AppRoutes() {
           <Route path="/" element={<Home />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/endpoints/:id" element={<Endpoint />} />
+            <Route path="/endpoints/:endpointId" element={<Endpoint />} />
             <Route path="/webhooks/:slug" element={<Webhook />} />
           </Route>
         </Route>
