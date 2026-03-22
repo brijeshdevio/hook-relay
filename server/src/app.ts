@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { cors } from 'hono/cors'
+import { cors } from "hono/cors";
+import { secureHeaders } from "hono/secure-headers";
 import { appError } from "./common/errors";
 import { env } from "./config";
 import { routes } from "./routes";
@@ -7,10 +8,14 @@ import "./workers/webhook.worker";
 
 const app = new Hono();
 
-app.use('*', cors({
+app.use(secureHeaders());
+app.use(
+  "*",
+  cors({
     origin: env.FRONTEND_URL,
     credentials: true,
-}))
+  }),
+);
 
 app.get("/", (c) => c.text("Welcome to Hono!"));
 
