@@ -70,6 +70,7 @@ export class AuthService {
   /* ----------------------------- Register ----------------------------- */
 
   async register(data: RegisterDto) {
+    pinoLogger.info("HELLO FROM SERVER");
     try {
       pinoLogger.info({ email: data.email }, "Register attempt");
 
