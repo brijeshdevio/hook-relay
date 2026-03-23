@@ -55,6 +55,14 @@ export class WebhookService {
             userId,
           },
         },
+        select: {
+          id: true,
+          receivedAt: true,
+          responseStatus: true,
+          responseTimeMs: true,
+          sourceIp: true,
+          deliveryStatus: true,
+        },
       });
 
       pinoLogger.info(
